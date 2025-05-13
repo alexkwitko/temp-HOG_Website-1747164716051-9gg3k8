@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Apply global styles using CSS variables set by SiteSettingsContext */
+:root {
+  /* Define fallback values (optional, but good practice) */
+  --font-body: \'Verdana\', sans-serif;
+  --font-heading: \'Verdana\', sans-serif;
+  --font-primary: \'Verdana\', sans-serif;
+  --font-secondary: \'Verdana\', sans-serif;
+
+  --color-background: #FFFFFF;
+  --color-text: #111827;
+  --color-primary: #1F2937;
+  --color-secondary: #6B7280;
+  --color-accent: #9CA3AF;
+  --color-border: #E5E7EB;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  /* Add other base body styles as needed */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  /* You might want specific heading colors too */
+}
+
+/* Base Button Styling */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 border border-transparent font-medium rounded-md shadow-sm text-sm;
+  font-family: var(--font-primary); /* Default to primary font for buttons */
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: var(--btn-transition-speed, 300ms);
+  padding-top: var(--btn-padding-y, 0.5rem);
+  padding-bottom: var(--btn-padding-y, 0.5rem);
+  padding-left: var(--btn-padding-x, 1rem);
+  padding-right: var(--btn-padding-x, 1rem);
+  font-weight: var(--btn-font-weight, 500);
+}
+
+/* Primary Button */
+.btn-primary {
+  @apply btn;
+  font-size: var(--btn-text-size, 1rem);
+  color: var(--btn-primary-text, #FFFFFF);
+  background-color: var(--btn-primary-bg, #000000);
+  background-image: var(--btn-primary-gradient, none);
+  border-radius: var(--btn-primary-border-radius, 4px);
+  border-width: var(--btn-primary-border-width, 0px);
+  border-color: var(--btn-primary-border-color, transparent);
+}
+
+.btn-primary:hover {
+  color: var(--btn-primary-hover-text, #FFFFFF);
+  background-color: var(--btn-primary-hover-bg, #333333);
+  /* For gradients, you might want an opacity change or overlay */
+  background-image: var(--btn-primary-gradient, none); /* Keep gradient, maybe add opacity filter? */
+  @apply opacity-90; /* Simple hover effect for gradients */
+}
+
+/* Secondary Button */
+.btn-secondary {
+  @apply btn;
+  font-family: var(--font-secondary); /* Use secondary font */
+  font-size: var(--btn-secondary-text-size, 1rem);
+  color: var(--btn-secondary-text, #000000);
+  background-color: var(--btn-secondary-bg, #CCCCCC);
+  background-image: var(--btn-secondary-gradient, none);
+  border-radius: var(--btn-secondary-border-radius, 4px);
+  border-width: var(--btn-secondary-border-width, 1px);
+  border-color: var(--btn-secondary-border-color, transparent);
+}
+
+.btn-secondary:hover {
+  color: var(--btn-secondary-hover-text, #000000);
+  background-color: var(--btn-secondary-hover-bg, #AAAAAA);
+  background-image: var(--btn-secondary-gradient, none);
+  @apply opacity-90;
+}
+
+/* Add focus styles maybe? */
+.btn:focus, .btn-primary:focus, .btn-secondary:focus {
+  @apply outline-none ring-2 ring-offset-2 ring-neutral-500; /* Example focus */
+}
