@@ -1,0 +1,207 @@
+/* 
+ * HOG Global Style Overrides
+ * This file contains CSS rules to ensure global settings are consistently applied
+ * throughout the application, while respecting the override-global class
+ */
+
+/* Font settings */
+html body {
+  font-family: var(--font-body, var(--body-font));
+  color: var(--color-palette-text-dark);
+}
+
+html body h1:not([class*="override-global"]), 
+html body h2:not([class*="override-global"]), 
+html body h3:not([class*="override-global"]), 
+html body h4:not([class*="override-global"]), 
+html body h5:not([class*="override-global"]), 
+html body h6:not([class*="override-global"]) {
+  font-family: var(--font-heading, var(--heading-font));
+  color: var(--color-palette-text-dark);
+}
+
+/* Button styling - with high specificity */
+html body button:not([class*="override-global"]),
+html body .button:not([class*="override-global"]),
+html body .btn:not([class*="override-global"]),
+html body a.button:not([class*="override-global"]),
+html body input[type="submit"]:not([class*="override-global"]),
+html body input[type="button"]:not([class*="override-global"]) {
+  background-color: var(--btn-primary-bg, var(--color-primary));
+  color: var(--btn-primary-text, var(--color-white));
+  border-radius: var(--btn-primary-border-radius, 0.25rem);
+  border: var(--btn-primary-border-width, 0) solid var(--btn-primary-border, var(--color-primary));
+  padding: var(--btn-padding-y, 0.75rem) var(--btn-padding-x, 1.5rem);
+  font-weight: var(--btn-font-weight, 500);
+  transition: all var(--btn-transition, 300ms) ease;
+  font-family: var(--font-primary, var(--primary-font));
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Button hover effects */
+html body button:not([class*="override-global"]):hover,
+html body .button:not([class*="override-global"]):hover,
+html body .btn:not([class*="override-global"]):hover,
+html body a.button:not([class*="override-global"]):hover,
+html body input[type="submit"]:not([class*="override-global"]):hover,
+html body input[type="button"]:not([class*="override-global"]):hover {
+  background-color: var(--btn-primary-hover-bg, var(--color-secondary));
+  color: var(--btn-primary-hover-text, var(--color-white));
+}
+
+/* Secondary button styling */
+html body button.secondary:not([class*="override-global"]),
+html body .button.secondary:not([class*="override-global"]),
+html body .btn.secondary:not([class*="override-global"]),
+html body a.button.secondary:not([class*="override-global"]) {
+  background-color: var(--btn-secondary-bg, var(--color-secondary));
+  color: var(--btn-secondary-text, var(--color-white));
+  border-radius: var(--btn-secondary-border-radius, 0.25rem);
+  border: var(--btn-secondary-border-width, 0) solid var(--btn-secondary-border, var(--color-secondary));
+}
+
+/* Secondary button hover effects */
+html body button.secondary:not([class*="override-global"]):hover,
+html body .button.secondary:not([class*="override-global"]):hover,
+html body .btn.secondary:not([class*="override-global"]):hover,
+html body a.button.secondary:not([class*="override-global"]):hover {
+  background-color: var(--btn-secondary-hover-bg, var(--color-primary));
+  color: var(--btn-secondary-hover-text, var(--color-white));
+}
+
+/* Section styling based on color mode */
+[data-color-mode="alternating"] .section-container:nth-of-type(odd) {
+  background-color: var(--color-section-odd);
+}
+
+[data-color-mode="alternating"] .section-container:nth-of-type(even) {
+  background-color: var(--color-section-even);
+}
+
+/* Admin pages component containers */
+.admin-component,
+.preview-component,
+.component-card {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  border-color: var(--color-primary);
+}
+
+/* Global palette classes for direct application to components */
+.bg-palette-primary {
+  background-color: var(--color-palette-primary);
+}
+
+.bg-palette-secondary {
+  background-color: var(--color-palette-secondary);
+}
+
+.bg-palette-accent {
+  background-color: var(--color-palette-accent);
+}
+
+.bg-palette-light {
+  background-color: var(--color-palette-light);
+}
+
+.bg-palette-dark {
+  background-color: var(--color-palette-dark);
+}
+
+.text-palette-dark {
+  color: var(--color-palette-text-dark);
+}
+
+.text-palette-light {
+  color: var(--color-palette-text-light);
+}
+
+/* Specific styles for component types in admin preview */
+.component-preview [data-component-id="hero"] {
+  background-color: transparent;
+}
+
+.component-preview [data-component-id^="section"] {
+  padding: 2rem 0;
+}
+
+.component-preview [data-component-id="featured_programs"] {
+  background-color: var(--color-section-even);
+}
+
+.component-preview [data-component-id="methodology"] {
+  background-color: var(--color-palette-primary);
+  color: var(--color-palette-text-light);
+}
+
+.component-preview [data-component-id="cta"] {
+  background-color: var(--color-palette-dark);
+  color: var(--color-palette-text-light);
+}
+
+.palette-hog_brand .component-card {
+  border-color: var(--color-palette-primary);
+}
+
+/* Forms and input styling */
+input:not([class*="override-global"]),
+select:not([class*="override-global"]),
+textarea:not([class*="override-global"]) {
+  border-color: var(--color-palette-primary);
+}
+
+input:focus:not([class*="override-global"]),
+select:focus:not([class*="override-global"]),
+textarea:focus:not([class*="override-global"]) {
+  border-color: var(--color-palette-accent);
+  outline-color: var(--color-palette-accent);
+}
+
+/* Admin specific overrides */
+.admin-sidebar:not([class*="override-global"]) {
+  background-color: var(--color-palette-primary);
+  color: var(--color-palette-text-light);
+}
+
+.admin-sidebar-link:not([class*="override-global"]),
+.admin-sidebar button:not([class*="override-global"]) {
+  color: var(--color-palette-text-light);
+}
+
+.admin-page:not([class*="override-global"]),
+.admin-content:not([class*="override-global"]) main {
+  background-color: var(--color-palette-light);
+  color: var(--color-palette-text-dark);
+}
+
+.admin-header:not([class*="override-global"]),
+header[class*="admin"]:not([class*="override-global"]) {
+  background-color: var(--color-palette-primary);
+  color: var(--color-palette-text-light);
+}
+
+/* Links */
+a:not([class*="override-global"]) {
+  color: var(--color-palette-primary);
+}
+
+a:hover:not([class*="override-global"]) {
+  color: var(--color-palette-accent);
+}
+
+/* Status indicators */
+.status-active {
+  background-color: var(--color-palette-success);
+}
+
+.status-inactive {
+  background-color: var(--color-palette-warning);
+}
+
+.status-error {
+  background-color: var(--color-palette-error);
+}
