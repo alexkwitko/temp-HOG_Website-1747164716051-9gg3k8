@@ -1,0 +1,181 @@
+/* Global CSS Variables set by GlobalSettingsContext */
+:root {
+  /* Font family variables (defaults that will be overridden) */
+  --font-primary: 'Verdana', sans-serif;
+  --font-secondary: 'Verdana', sans-serif;
+  --font-body: 'Verdana', sans-serif;
+  --font-heading: 'Verdana', sans-serif;
+  
+  /* Button variables (defaults that will be overridden) */
+  --btn-primary-bg: #000000;
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-hover-bg: #333333;
+  --btn-primary-hover-text: #FFFFFF;
+  --btn-primary-border: #000000;
+  --btn-primary-border-width: 0px;
+  --btn-primary-border-radius: 0.25rem;
+  
+  --btn-secondary-bg: #666666;
+  --btn-secondary-text: #FFFFFF;
+  --btn-secondary-hover-bg: #444444;
+  --btn-secondary-hover-text: #FFFFFF;
+  --btn-secondary-border: #666666;
+  --btn-secondary-border-width: 1px;
+  --btn-secondary-border-radius: 0.25rem;
+  
+  --gradient-from: #4F46E5;
+  --gradient-to: #8B5CF6;
+  --gradient-direction: to-right;
+  
+  --btn-padding-x: 1.5rem;
+  --btn-padding-y: 0.75rem;
+  --btn-transition: 300ms;
+}
+
+/* Apply global fonts to HTML elements */
+body {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* CSS classes for using specific fonts */
+.primary-font {
+  font-family: var(--font-primary);
+}
+
+.secondary-font {
+  font-family: var(--font-secondary);
+}
+
+.body-font {
+  font-family: var(--font-body);
+}
+
+.heading-font {
+  font-family: var(--font-heading);
+}
+
+/* Button base styles with CSS variables */
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--btn-transition) ease;
+}
+
+/* Button variants using CSS variables */
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: var(--btn-primary-border-width) solid var(--btn-primary-border);
+  border-radius: var(--btn-primary-border-radius);
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover-bg);
+  color: var(--btn-primary-hover-text);
+}
+
+.btn-secondary {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: var(--btn-secondary-border-width) solid var(--btn-secondary-border);
+  border-radius: var(--btn-secondary-border-radius);
+}
+
+.btn-secondary:hover {
+  background-color: var(--btn-secondary-hover-bg);
+  color: var(--btn-secondary-hover-text);
+}
+
+.btn-gradient {
+  background: linear-gradient(var(--gradient-direction), var(--gradient-from), var(--gradient-to));
+  color: white;
+}
+
+/* Button sizes */
+.btn-xs {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.btn-sm {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+.btn-md {
+  font-size: 1rem;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+}
+
+.btn-lg {
+  font-size: 1.125rem;
+  padding: 1rem 2rem;
+}
+
+.btn-xl {
+  font-size: 1.25rem;
+  padding: 1.25rem 2.5rem;
+}
+
+/* Button styles */
+.btn-outline.btn-primary {
+  background-color: transparent;
+  color: var(--btn-primary-bg);
+  border: 1px solid var(--btn-primary-bg);
+}
+
+.btn-outline.btn-primary:hover {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+.btn-outline.btn-secondary {
+  background-color: transparent;
+  color: var(--btn-secondary-bg);
+  border: 1px solid var(--btn-secondary-bg);
+}
+
+.btn-outline.btn-secondary:hover {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+}
+
+.btn-ghost.btn-primary {
+  background-color: transparent;
+  color: var(--btn-primary-bg);
+  border: none;
+}
+
+.btn-ghost.btn-primary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.btn-ghost.btn-secondary {
+  background-color: transparent;
+  color: var(--btn-secondary-bg);
+  border: none;
+}
+
+.btn-ghost.btn-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Button transitions */
+.btn, .btn * {
+  transition: all var(--btn-transition) ease;
+}
+
+/* Common button effects */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+} 
