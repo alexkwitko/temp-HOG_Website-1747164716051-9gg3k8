@@ -1,0 +1,234 @@
+-- Sample data for the e-commerce tables
+-- For use with the House of Grappling shop
+
+-- Location
+INSERT INTO locations (id, name, address, city, state, postal_code, country)
+VALUES 
+('c47e6fa8-9b1a-4e7c-8f4d-2c9e1c63d5a7', 'Main Store', '123 Main Street, Suite 101', 'San Francisco', 'CA', '94105', 'USA');
+
+-- Products and variants
+INSERT INTO products (id, title, description, vendor, product_type, handle, status, tags)
+VALUES
+('d8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 'HOG Basic Gi', 'High-quality basic gi for everyday training', 'House of Grappling', 'Clothing', 'hog-basic-gi', 'active', ARRAY['gi', 'clothing', 'training']),
+
+('e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 'HOG Premium Rash Guard', 'Moisture-wicking rash guard with HOG logo', 'House of Grappling', 'Clothing', 'hog-premium-rash-guard', 'active', ARRAY['rash guard', 'no-gi', 'clothing']),
+
+('a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', 'BJJ Belt', 'IBJJF-approved competition belt', 'House of Grappling', 'Accessories', 'bjj-belt', 'active', ARRAY['belt', 'accessories']),
+
+('f1e2d3c4-b5a6-9876-5432-1a2b3c4d5e6f', 'HOG Training Shorts', 'Durable training shorts with side slits for mobility', 'House of Grappling', 'Clothing', 'hog-training-shorts', 'active', ARRAY['shorts', 'no-gi', 'clothing']);
+
+-- Product variants for Gi
+INSERT INTO product_variants (id, product_id, title, price, sku, size, color)
+VALUES
+('a7b8c9d0-e1f2-a3b4-c5d6-e7f8a9b0c1d2', 'd8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 'White A1', 119.99, 'GI-WHT-A1', 'A1', 'White'),
+('b7c8d9e0-f1a2-b3c4-d5e6-f7a8b9c0d1e2', 'd8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 'White A2', 119.99, 'GI-WHT-A2', 'A2', 'White'),
+('c7d8e9f0-a1b2-c3d4-e5f6-a7b8c9d0e1f2', 'd8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 'Blue A1', 129.99, 'GI-BLU-A1', 'A1', 'Blue'),
+('d7e8f9a0-b1c2-d3e4-f5a6-b7c8d9e0f1a2', 'd8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 'Blue A2', 129.99, 'GI-BLU-A2', 'A2', 'Blue');
+
+-- Product variants for Rash Guard
+INSERT INTO product_variants (id, product_id, title, price, sku, size, color)
+VALUES
+('e7f8a9b0-c1d2-e3f4-a5b6-c7d8e9f0a1b2', 'e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 'Black S', 49.99, 'RG-BLK-S', 'S', 'Black'),
+('f7a8b9c0-d1e2-f3a4-b5c6-d7e8f9a0b1c2', 'e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 'Black M', 49.99, 'RG-BLK-M', 'M', 'Black'),
+('a8b9c0d1-e2f3-a4b5-c6d7-e8f9a0b1c2d3', 'e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 'Black L', 49.99, 'RG-BLK-L', 'L', 'Black'),
+('b8c9d0e1-f2a3-b4c5-d6e7-f8a9b0c1d2e3', 'e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 'Red S', 49.99, 'RG-RED-S', 'S', 'Red');
+
+-- Product variants for Belt
+INSERT INTO product_variants (id, product_id, title, price, sku, color)
+VALUES
+('c8d9e0f1-a2b3-c4d5-e6f7-a8b9c0d1e2f3', 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', 'White Belt', 29.99, 'BLT-WHT', 'White'),
+('d8e9f0a1-b2c3-d4e5-f6a7-b8c9d0e1f2a3', 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', 'Blue Belt', 29.99, 'BLT-BLU', 'Blue'),
+('e8f9a0b1-c2d3-e4f5-a6b7-c8d9e0f1a2b3', 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', 'Purple Belt', 29.99, 'BLT-PUR', 'Purple'),
+('f8a9b0c1-d2e3-f4a5-b6c7-d8e9f0a1b2c3', 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', 'Brown Belt', 29.99, 'BLT-BRN', 'Brown');
+
+-- Product variants for Shorts
+INSERT INTO product_variants (id, product_id, title, price, sku, size, color)
+VALUES
+('a9b0c1d2-e3f4-a5b6-c7d8-e9f0a1b2c3d4', 'f1e2d3c4-b5a6-9876-5432-1a2b3c4d5e6f', 'Black S', 39.99, 'SHT-BLK-S', 'S', 'Black'),
+('b9c0d1e2-f3a4-b5c6-d7e8-f9a0b1c2d3e4', 'f1e2d3c4-b5a6-9876-5432-1a2b3c4d5e6f', 'Black M', 39.99, 'SHT-BLK-M', 'M', 'Black'),
+('c9d0e1f2-a3b4-c5d6-e7f8-a9b0c1d2e3f4', 'f1e2d3c4-b5a6-9876-5432-1a2b3c4d5e6f', 'Black L', 39.99, 'SHT-BLK-L', 'L', 'Black'),
+('d9e0f1a2-b3c4-d5e6-f7a8-b9c0d1e2f3a4', 'f1e2d3c4-b5a6-9876-5432-1a2b3c4d5e6f', 'Red S', 39.99, 'SHT-RED-S', 'S', 'Red');
+
+-- Product images
+INSERT INTO product_images (id, product_id, src, alt, position)
+VALUES
+('a0b1c2d3-e4f5-a6b7-c8d9-e0f1a2b3c4d5', 'd8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 'https://images.unsplash.com/photo-1593350598539-4ba7c8b6ed8a?w=800&auto=format&fit=crop', 'White BJJ Gi', 1),
+('b0c1d2e3-f4a5-b6c7-d8e9-f0a1b2c3d4e5', 'd8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 'https://images.unsplash.com/photo-1635366472621-697360ee2ab8?w=800&auto=format&fit=crop', 'Blue BJJ Gi', 2),
+('c0d1e2f3-a4b5-c6d7-e8f9-a0b1c2d3e4f5', 'e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 'https://images.unsplash.com/photo-1562771379-c5b1916d4b5a?w=800&auto=format&fit=crop', 'Black Rash Guard', 1),
+('d0e1f2a3-b4c5-d6e7-f8a9-b0c1d2e3f4a5', 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', 'https://images.unsplash.com/photo-1599058918144-1ffabb6ab9a0?w=800&auto=format&fit=crop', 'BJJ Belts Collection', 1),
+('e0f1a2b3-c4d5-e6f7-a8b9-c0d1e2f3a4b5', 'f1e2d3c4-b5a6-9876-5432-1a2b3c4d5e6f', 'https://images.unsplash.com/photo-1581952976147-5a2d15560349?w=800&auto=format&fit=crop', 'Training Shorts', 1);
+
+-- Collections - Update or insert collections
+DO $$
+DECLARE
+    essentials_id INTEGER;
+    nogi_id INTEGER;
+    newarrivals_id INTEGER;
+BEGIN
+    -- Check if collections exist, get their IDs or create new ones
+    SELECT id INTO essentials_id FROM collections WHERE slug = 'bjj-essentials';
+    IF NOT FOUND THEN
+        INSERT INTO collections (name, description, slug, image_url, collection_type, handle, sort_order) 
+        VALUES ('BJJ Essentials', 'Essential gear for your Brazilian Jiu-Jitsu training', 
+                'bjj-essentials', 'https://images.unsplash.com/photo-1599058918144-1ffabb6ab9a0?w=800&auto=format&fit=crop',
+                'manual', 'bjj-essentials', 'alpha-asc')
+        RETURNING id INTO essentials_id;
+    ELSE
+        UPDATE collections SET 
+            collection_type = 'manual',
+            handle = 'bjj-essentials',
+            sort_order = 'alpha-asc'
+        WHERE id = essentials_id;
+    END IF;
+    
+    SELECT id INTO nogi_id FROM collections WHERE slug = 'no-gi-training';
+    IF NOT FOUND THEN
+        INSERT INTO collections (name, description, slug, image_url, collection_type, handle, sort_order) 
+        VALUES ('No-Gi Training', 'Everything you need for no-gi training sessions', 
+                'no-gi-training', 'https://images.unsplash.com/photo-1562771379-c5b1916d4b5a?w=800&auto=format&fit=crop',
+                'manual', 'no-gi-training', 'alpha-asc')
+        RETURNING id INTO nogi_id;
+    ELSE
+        UPDATE collections SET 
+            collection_type = 'manual',
+            handle = 'no-gi-training',
+            sort_order = 'alpha-asc'
+        WHERE id = nogi_id;
+    END IF;
+    
+    SELECT id INTO newarrivals_id FROM collections WHERE slug = 'new-arrivals';
+    IF NOT FOUND THEN
+        INSERT INTO collections (name, description, slug, image_url, collection_type, handle, sort_order) 
+        VALUES ('New Arrivals', 'Our latest gear and equipment', 
+                'new-arrivals', 'https://images.unsplash.com/photo-1593350598539-4ba7c8b6ed8a?w=800&auto=format&fit=crop',
+                'manual', 'new-arrivals', 'alpha-asc')
+        RETURNING id INTO newarrivals_id;
+    ELSE
+        UPDATE collections SET 
+            collection_type = 'manual',
+            handle = 'new-arrivals',
+            sort_order = 'alpha-asc'
+        WHERE id = newarrivals_id;
+    END IF;
+    
+    -- Add products to collections
+    -- First clear existing collection-product relationships
+    DELETE FROM collection_products WHERE collection_id IN (essentials_id, nogi_id, newarrivals_id);
+    
+    -- BJJ Essentials
+    INSERT INTO collection_products (collection_id, product_id, position)
+    VALUES 
+    (essentials_id, 'd8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 1),
+    (essentials_id, 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d', 2);
+    
+    -- No-Gi Training
+    INSERT INTO collection_products (collection_id, product_id, position)
+    VALUES 
+    (nogi_id, 'e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 1),
+    (nogi_id, 'f1e2d3c4-b5a6-9876-5432-1a2b3c4d5e6f', 2);
+    
+    -- New Arrivals
+    INSERT INTO collection_products (collection_id, product_id, position)
+    VALUES 
+    (newarrivals_id, 'e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 1),
+    (newarrivals_id, 'f1e2d3c4-b5a6-9876-5432-1a2b3c4d5e6f', 2);
+END;
+$$;
+
+-- Inventory Items
+INSERT INTO inventory_items (id, variant_id, sku, cost, tracked)
+VALUES
+('a2b3c4d5-e6f7-a8b9-c0d1-e2f3a4b5c6d7', 'a7b8c9d0-e1f2-a3b4-c5d6-e7f8a9b0c1d2', 'GI-WHT-A1', 59.99, TRUE),
+('b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7', 'b7c8d9e0-f1a2-b3c4-d5e6-f7a8b9c0d1e2', 'GI-WHT-A2', 59.99, TRUE),
+('c2d3e4f5-a6b7-c8d9-e0f1-a2b3c4d5e6f7', 'c7d8e9f0-a1b2-c3d4-e5f6-a7b8c9d0e1f2', 'GI-BLU-A1', 64.99, TRUE),
+('d2e3f4a5-b6c7-d8e9-f0a1-b2c3d4e5f6a7', 'd7e8f9a0-b1c2-d3e4-f5a6-b7c8d9e0f1a2', 'GI-BLU-A2', 64.99, TRUE),
+('e2f3a4b5-c6d7-e8f9-a0b1-c2d3e4f5a6b7', 'e7f8a9b0-c1d2-e3f4-a5b6-c7d8e9f0a1b2', 'RG-BLK-S', 24.99, TRUE),
+('f2a3b4c5-d6e7-f8a9-b0c1-d2e3f4a5b6c7', 'f7a8b9c0-d1e2-f3a4-b5c6-d7e8f9a0b1c2', 'RG-BLK-M', 24.99, TRUE);
+
+-- Inventory Levels
+INSERT INTO inventory_levels (inventory_item_id, location_id, available)
+VALUES
+('a2b3c4d5-e6f7-a8b9-c0d1-e2f3a4b5c6d7', 'c47e6fa8-9b1a-4e7c-8f4d-2c9e1c63d5a7', 15),
+('b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7', 'c47e6fa8-9b1a-4e7c-8f4d-2c9e1c63d5a7', 20),
+('c2d3e4f5-a6b7-c8d9-e0f1-a2b3c4d5e6f7', 'c47e6fa8-9b1a-4e7c-8f4d-2c9e1c63d5a7', 10),
+('d2e3f4a5-b6c7-d8e9-f0a1-b2c3d4e5f6a7', 'c47e6fa8-9b1a-4e7c-8f4d-2c9e1c63d5a7', 12),
+('e2f3a4b5-c6d7-e8f9-a0b1-c2d3e4f5a6b7', 'c47e6fa8-9b1a-4e7c-8f4d-2c9e1c63d5a7', 25),
+('f2a3b4c5-d6e7-f8a9-b0c1-d2e3f4a5b6c7', 'c47e6fa8-9b1a-4e7c-8f4d-2c9e1c63d5a7', 18);
+
+-- Sample Customers
+INSERT INTO customers (id, email, first_name, last_name, phone)
+VALUES
+('a3b4c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8', 'john.smith@example.com', 'John', 'Smith', '(555) 123-4567'),
+('b3c4d5e6-f7a8-b9c0-d1e2-f3a4b5c6d7e8', 'jane.doe@example.com', 'Jane', 'Doe', '(555) 987-6543');
+
+-- Customer Addresses
+INSERT INTO customer_addresses (customer_id, address_type, is_default, address1, city, state, postal_code, country)
+VALUES
+('a3b4c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8', 'shipping', TRUE, '123 Main St', 'San Francisco', 'CA', '94105', 'USA'),
+('a3b4c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8', 'billing', TRUE, '123 Main St', 'San Francisco', 'CA', '94105', 'USA'),
+('b3c4d5e6-f7a8-b9c0-d1e2-f3a4b5c6d7e8', 'shipping', TRUE, '456 Market St', 'San Francisco', 'CA', '94102', 'USA');
+
+-- Sample Orders
+INSERT INTO orders (
+  id, customer_id, order_number, email, financial_status,
+  fulfillment_status, total_price, subtotal_price, total_tax,
+  shipping_address
+)
+VALUES
+('a4b5c6d7-e8f9-a0b1-c2d3-e4f5a6b7c8d9', 'a3b4c5d6-e7f8-a9b0-c1d2-e3f4a5b6c7d8', 'HOG-1001', 
+ 'john.smith@example.com', 'paid', 'fulfilled', 129.99, 119.99, 10.00,
+ '{"address1":"123 Main St","city":"San Francisco","state":"CA","postal_code":"94105","country":"USA"}'
+),
+('b4c5d6e7-f8a9-b0c1-d2e3-f4a5b6c7d8e9', 'b3c4d5e6-f7a8-b9c0-d1e2-f3a4b5c6d7e8', 'HOG-1002', 
+ 'jane.doe@example.com', 'paid', 'fulfilled', 59.99, 49.99, 10.00,
+ '{"address1":"456 Market St","city":"San Francisco","state":"CA","postal_code":"94102","country":"USA"}'
+);
+
+-- Order Line Items
+INSERT INTO order_line_items (
+  order_id, product_id, variant_id, title, variant_title,
+  quantity, price, total_price, sku
+)
+VALUES
+('a4b5c6d7-e8f9-a0b1-c2d3-e4f5a6b7c8d9', 'd8f2d4a6-3b7c-4e9f-8a1b-5c2d3e4f5a6b', 
+ 'a7b8c9d0-e1f2-a3b4-c5d6-e7f8a9b0c1d2', 'HOG Basic Gi', 'White A1',
+ 1, 119.99, 119.99, 'GI-WHT-A1'
+),
+('b4c5d6e7-f8a9-b0c1-d2e3-f4a5b6c7d8e9', 'e8f7d6c5-4b3a-2e1d-0f9e-8d7c6b5a4d3e', 
+ 'e7f8a9b0-c1d2-e3f4-a5b6-c7d8e9f0a1b2', 'HOG Premium Rash Guard', 'Black S',
+ 1, 49.99, 49.99, 'RG-BLK-S'
+);
+
+-- Transactions
+INSERT INTO transactions (
+  order_id, kind, gateway, status, amount, currency
+)
+VALUES
+('a4b5c6d7-e8f9-a0b1-c2d3-e4f5a6b7c8d9', 'sale', 'stripe', 'success', 129.99, 'USD'),
+('b4c5d6e7-f8a9-b0c1-d2e3-f4a5b6c7d8e9', 'sale', 'stripe', 'success', 59.99, 'USD');
+
+-- Discount Codes
+INSERT INTO discount_codes (id, code, price_rule_id, usage_count)
+VALUES
+('a5b6c7d8-e9f0-a1b2-c3d4-e5f6a7b8c9d0', 'WELCOME10', NULL, 5),
+('b5c6d7e8-f9a0-b1c2-d3e4-f5a6b7c8d9e0', 'SUMMER2024', NULL, 0);
+
+-- Price Rules
+INSERT INTO price_rules (
+  id, title, target_type, target_selection, allocation_method,
+  value_type, value, once_per_customer, starts_at, ends_at
+)
+VALUES
+('c5d6e7f8-a9b0-c1d2-e3f4-a5b6c7d8e9f0', 'Welcome Discount', 'line_item', 'all', 'across', 
+ 'percentage', 10.00, TRUE, '2024-01-01', '2024-12-31'),
+('d5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0', 'Summer Sale', 'line_item', 'all', 'across', 
+ 'percentage', 20.00, FALSE, '2024-06-01', '2024-08-31');
+
+-- Update the price rule IDs in discount codes
+UPDATE discount_codes
+SET price_rule_id = 'c5d6e7f8-a9b0-c1d2-e3f4-a5b6c7d8e9f0'
+WHERE code = 'WELCOME10';
+
+UPDATE discount_codes
+SET price_rule_id = 'd5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0'
+WHERE code = 'SUMMER2024'; 
