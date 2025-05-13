@@ -1,0 +1,409 @@
+-- Migration: Create e-commerce tables for House of Grappling
+-- Products & Inventory tables
+
+-- Products - Main product data
+CREATE TABLE IF NOT EXISTS products (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  description TEXT,
+  vendor TEXT,
+  product_type TEXT,
+  handle TEXT UNIQUE,
+  status TEXT DEFAULT 'active',
+  tags TEXT[],
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Product Variants - Different versions of a product
+CREATE TABLE IF NOT EXISTS product_variants (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  compare_at_price DECIMAL(10, 2),
+  sku TEXT UNIQUE,
+  barcode TEXT,
+  size TEXT,
+  color TEXT,
+  material TEXT,
+  weight DECIMAL(10, 2),
+  weight_unit TEXT,
+  requires_shipping BOOLEAN DEFAULT TRUE,
+  taxable BOOLEAN DEFAULT TRUE,
+  inventory_policy TEXT DEFAULT 'deny',
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Product Images - Images associated with products
+CREATE TABLE IF NOT EXISTS product_images (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  variant_id UUID REFERENCES product_variants(id) ON DELETE SET NULL,
+  src TEXT NOT NULL,
+  alt TEXT,
+  position INTEGER DEFAULT 1,
+  width INTEGER,
+  height INTEGER,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Use existing collections table (from \d collections)
+-- We'll add a temporary field collection_type to it
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'collections' AND column_name = 'collection_type'
+  ) THEN
+    ALTER TABLE collections ADD COLUMN collection_type TEXT DEFAULT 'manual';
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'collections' AND column_name = 'handle'
+  ) THEN
+    ALTER TABLE collections ADD COLUMN handle TEXT;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'collections' AND column_name = 'sort_order'
+  ) THEN
+    ALTER TABLE collections ADD COLUMN sort_order TEXT DEFAULT 'alpha-asc';
+  END IF;
+END
+$$;
+
+-- Collection Rules - For automated collections
+CREATE TABLE IF NOT EXISTS collection_rules (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  collection_id INTEGER NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
+  column_name TEXT NOT NULL, -- product field to check
+  relation TEXT NOT NULL, -- equals, contains, greater_than, etc.
+  condition TEXT NOT NULL, -- value to compare against
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Collection Products - For manual collections (already exists)
+-- Add new fields if needed
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'collection_products' AND column_name = 'position'
+  ) THEN
+    ALTER TABLE collection_products ADD COLUMN position INTEGER DEFAULT 0;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'collection_products' AND column_name = 'created_at'
+  ) THEN
+    ALTER TABLE collection_products ADD COLUMN created_at TIMESTAMPTZ DEFAULT NOW();
+  END IF;
+END
+$$;
+
+-- Locations - Store or warehouse locations
+CREATE TABLE IF NOT EXISTS locations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  address TEXT,
+  city TEXT,
+  state TEXT,
+  postal_code TEXT,
+  country TEXT,
+  phone TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Inventory Items - SKU, cost, and inventory-tracked item data
+CREATE TABLE IF NOT EXISTS inventory_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  variant_id UUID NOT NULL REFERENCES product_variants(id) ON DELETE CASCADE,
+  sku TEXT,
+  cost DECIMAL(10, 2),
+  tracked BOOLEAN DEFAULT TRUE,
+  requires_shipping BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(variant_id)
+);
+
+-- Inventory Levels - Inventory quantities per location
+CREATE TABLE IF NOT EXISTS inventory_levels (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  inventory_item_id UUID NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+  location_id UUID NOT NULL REFERENCES locations(id) ON DELETE CASCADE,
+  available INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(inventory_item_id, location_id)
+);
+
+-- Orders & Transactions
+
+-- Customers - Customer profiles
+CREATE TABLE IF NOT EXISTS customers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  email TEXT UNIQUE,
+  first_name TEXT,
+  last_name TEXT,
+  phone TEXT,
+  accepts_marketing BOOLEAN DEFAULT FALSE,
+  tags TEXT[],
+  note TEXT,
+  tax_exempt BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Customer Addresses - Shipping and billing addresses
+CREATE TABLE IF NOT EXISTS customer_addresses (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  address_type TEXT NOT NULL, -- 'billing' or 'shipping'
+  is_default BOOLEAN DEFAULT FALSE,
+  company TEXT,
+  address1 TEXT NOT NULL,
+  address2 TEXT,
+  city TEXT NOT NULL,
+  state TEXT,
+  postal_code TEXT,
+  country TEXT NOT NULL,
+  phone TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Orders - Customer orders with details
+CREATE TABLE IF NOT EXISTS orders (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
+  order_number TEXT UNIQUE,
+  email TEXT,
+  phone TEXT,
+  financial_status TEXT DEFAULT 'pending', -- pending, authorized, paid, refunded, etc.
+  fulfillment_status TEXT DEFAULT 'unfulfilled', -- unfulfilled, partial, fulfilled
+  currency TEXT DEFAULT 'USD',
+  total_price DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  subtotal_price DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  total_tax DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  total_discounts DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  total_shipping DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  billing_address JSONB,
+  shipping_address JSONB,
+  note TEXT,
+  tags TEXT[],
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Order Line Items - Products included in each order
+CREATE TABLE IF NOT EXISTS order_line_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+  variant_id UUID REFERENCES product_variants(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  variant_title TEXT,
+  quantity INTEGER NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  total_price DECIMAL(10, 2) NOT NULL,
+  grams INTEGER DEFAULT 0,
+  sku TEXT,
+  fulfillment_status TEXT DEFAULT NULL,
+  properties JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Transactions - Payment activity per order
+CREATE TABLE IF NOT EXISTS transactions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL, -- 'authorization', 'capture', 'sale', 'void', 'refund'
+  gateway TEXT NOT NULL, -- 'stripe', 'paypal', etc.
+  status TEXT NOT NULL, -- 'success', 'failure', 'pending'
+  amount DECIMAL(10, 2) NOT NULL,
+  currency TEXT DEFAULT 'USD',
+  authorization TEXT,
+  error_code TEXT,
+  error_message TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Fulfillments - Shipping, tracking, and delivery info
+CREATE TABLE IF NOT EXISTS fulfillments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'pending', -- pending, success, failure, error, cancelled
+  tracking_company TEXT,
+  tracking_number TEXT,
+  tracking_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Fulfillment Line Items - Products included in each fulfillment
+CREATE TABLE IF NOT EXISTS fulfillment_line_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  fulfillment_id UUID NOT NULL REFERENCES fulfillments(id) ON DELETE CASCADE,
+  order_line_item_id UUID NOT NULL REFERENCES order_line_items(id) ON DELETE CASCADE,
+  quantity INTEGER NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Refunds - Returned products and refunded payments
+CREATE TABLE IF NOT EXISTS refunds (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  note TEXT,
+  restock BOOLEAN DEFAULT FALSE,
+  amount DECIMAL(10, 2) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Refund Line Items - Products included in each refund
+CREATE TABLE IF NOT EXISTS refund_line_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  refund_id UUID NOT NULL REFERENCES refunds(id) ON DELETE CASCADE,
+  order_line_item_id UUID NOT NULL REFERENCES order_line_items(id) ON DELETE CASCADE,
+  quantity INTEGER NOT NULL,
+  restock_type TEXT DEFAULT 'no_restock', -- no_restock, return, cancel
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Marketing & Discounts
+
+-- Discount Codes - Promo codes for sales
+CREATE TABLE IF NOT EXISTS discount_codes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  code TEXT NOT NULL UNIQUE,
+  price_rule_id UUID,
+  usage_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Price Rules - Logic behind each discount
+CREATE TABLE IF NOT EXISTS price_rules (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  target_type TEXT NOT NULL, -- 'line_item', 'shipping_line'
+  target_selection TEXT NOT NULL, -- 'all', 'entitled'
+  allocation_method TEXT NOT NULL, -- 'across', 'each'
+  value_type TEXT NOT NULL, -- 'fixed_amount', 'percentage'
+  value DECIMAL(10, 2) NOT NULL,
+  once_per_customer BOOLEAN DEFAULT FALSE,
+  usage_limit INTEGER DEFAULT NULL,
+  starts_at TIMESTAMPTZ,
+  ends_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Marketing Events - Campaign tracking
+CREATE TABLE IF NOT EXISTS marketing_events (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_type TEXT NOT NULL, -- 'email', 'social', 'search', etc.
+  remote_id TEXT,
+  budget DECIMAL(10, 2),
+  budget_type TEXT,
+  marketing_channel TEXT,
+  started_at TIMESTAMPTZ,
+  ended_at TIMESTAMPTZ,
+  scheduled_to_end_at TIMESTAMPTZ,
+  utm_campaign TEXT,
+  utm_medium TEXT,
+  utm_source TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Payment & Subscriptions
+
+-- Subscriptions - Recurring orders
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  status TEXT NOT NULL, -- 'active', 'paused', 'cancelled'
+  billing_cycle TEXT NOT NULL, -- 'weekly', 'monthly', 'annually'
+  next_billing_date TIMESTAMPTZ,
+  product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+  variant_id UUID REFERENCES product_variants(id) ON DELETE SET NULL,
+  quantity INTEGER NOT NULL DEFAULT 1,
+  price DECIMAL(10, 2) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Billing Attempts - Subscription payment attempts
+CREATE TABLE IF NOT EXISTS billing_attempts (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  subscription_id UUID NOT NULL REFERENCES subscriptions(id) ON DELETE CASCADE,
+  status TEXT NOT NULL, -- 'success', 'failure'
+  error_message TEXT,
+  amount DECIMAL(10, 2) NOT NULL,
+  next_retry_at TIMESTAMPTZ,
+  retry_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS Policies
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE product_variants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE product_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE collection_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE locations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inventory_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inventory_levels ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customer_addresses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE order_line_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE fulfillments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE fulfillment_line_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE refunds ENABLE ROW LEVEL SECURITY;
+ALTER TABLE refund_line_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE discount_codes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE price_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE marketing_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE billing_attempts ENABLE ROW LEVEL SECURITY;
+
+-- Basic read access for authenticated users
+CREATE POLICY "Products are viewable by authenticated users" 
+ON products FOR SELECT 
+TO authenticated
+USING (true);
+
+-- Policies for admin CRUD operations
+CREATE POLICY "Admins can do all operations on products" 
+ON products
+TO authenticated
+USING (auth.jwt() ->> 'role' = 'admin')
+WITH CHECK (auth.jwt() ->> 'role' = 'admin');
+
+-- Add indexes for performance
+CREATE INDEX IF NOT EXISTS idx_products_vendor ON products(vendor);
+CREATE INDEX IF NOT EXISTS idx_products_product_type ON products(product_type);
+CREATE INDEX IF NOT EXISTS idx_product_variants_product_id ON product_variants(product_id);
+CREATE INDEX IF NOT EXISTS idx_product_images_product_id ON product_images(product_id);
+CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX IF NOT EXISTS idx_order_line_items_order_id ON order_line_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_inventory_levels_inventory_item_id ON inventory_levels(inventory_item_id);
+CREATE INDEX IF NOT EXISTS idx_inventory_levels_location_id ON inventory_levels(location_id); 
