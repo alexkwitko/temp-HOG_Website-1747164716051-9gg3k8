@@ -1,0 +1,11 @@
+-- SQL Script for why_choose_cards
+-- Generated on 2025-05-09T02:55:06.388Z
+
+-- Clear existing data
+DELETE FROM why_choose_cards;
+
+-- Insert data
+INSERT INTO why_choose_cards (id, title, description, icon_name, image_url, image_id, button_text, button_url, button_bg, button_text_color, card_bg, card_text_color, use_icon, order, is_active, created_at, updated_at) VALUES ('e0f01bff-124e-441b-bb17-0893cb544449', 'Expert Instructors', 'Learn from championship-level black belts with decades of combined experience.', 'Award', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, TRUE, 1, TRUE, '2025-05-07T00:09:50.124096+00:00', '2025-05-09T02:43:17.372755+00:00');
+INSERT INTO why_choose_cards (id, title, description, icon_name, image_url, image_id, button_text, button_url, button_bg, button_text_color, card_bg, card_text_color, use_icon, order, is_active, created_at, updated_at) VALUES ('e496e7bb-5b78-4b46-821f-f84ffeab4bbb', 'Supportive Community', 'Train in a welcoming, ego-free environment focused on mutual growth and respect.', 'Users', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, TRUE, 2, TRUE, '2025-05-07T00:09:50.124096+00:00', '2025-05-09T02:43:28.306435+00:00');
+INSERT INTO why_choose_cards (id, title, description, icon_name, image_url, image_id, button_text, button_url, button_bg, button_text_color, card_bg, card_text_color, use_icon, order, is_active, created_at, updated_at) VALUES ('ac98de4c-96b6-4cb6-a3ab-831594832d0e', 'Flexible Schedule', 'With 40+ classes weekly, find training times that fit your busy lifestyle.', 'Calendar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, TRUE, 3, TRUE, '2025-05-07T00:09:50.124096+00:00', '2025-05-09T02:43:28.410057+00:00');
+INSERT INTO why_choose_cards (id, title, description, icon_name, image_url, image_id, button_text, button_url, button_bg, button_text_color, card_bg, card_text_color, use_icon, order, is_active, created_at, updated_at) VALUES ('9ef48c77-863c-4955-bade-7f9b2c2d144f', 'Modern Facility', 'Train on 2,500 sq ft of premium mats with clean changing rooms and showers.', 'ShieldCheck', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, TRUE, 4, TRUE, '2025-05-07T00:09:50.124096+00:00', '2025-05-09T02:43:28.519917+00:00');
