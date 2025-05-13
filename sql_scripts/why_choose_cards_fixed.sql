@@ -1,0 +1,101 @@
+-- SQL Script for why_choose_cards with fixed syntax
+-- Generated on 2024-05-08
+
+-- Clear existing data
+DELETE FROM why_choose_cards;
+
+-- Insert data
+INSERT INTO why_choose_cards (
+  id, title, description, icon_name, icon_color,
+  card_bg, card_text_color, use_icon, "order", is_active,
+  created_at, updated_at, image_url, image_id, button_text, button_url,
+  button_bg, button_text_color, text_alignment, icon_alignment
+) 
+VALUES (
+  'b8c00c31-0d2d-4df8-a1d4-dce9a3a99c78',
+  'Expert Instructors',
+  'Learn from coaches with decades of competitive experience and diverse training backgrounds.',
+  'GiTeacher',
+  '#1A1A1A',
+  '#FFFFFF',
+  '#000000',
+  TRUE,
+  1,
+  TRUE,
+  '2024-05-08T12:40:11.583Z',
+  '2024-05-08T12:40:11.583Z',
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  'center',
+  'center'
+),
+(
+  'c9d44f9a-7e36-40c0-9cd7-a9f4cd23b675',
+  'Comprehensive Curriculum',
+  'Structured learning path from fundamentals to advanced techniques for consistent progress.',
+  'MdOutlineMenuBook',
+  '#1A1A1A',
+  '#FFFFFF',
+  '#000000',
+  TRUE,
+  2,
+  TRUE,
+  '2024-05-08T12:40:11.583Z',
+  '2024-05-08T12:40:11.583Z',
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  'center',
+  'center'
+),
+(
+  'd7e39c0b-8f12-4e9c-96ab-5d2d1cda6c19',
+  'Supportive Community',
+  'Train in a welcoming environment where everyone helps each other improve and grow.',
+  'MdOutlinePeople',
+  '#1A1A1A',
+  '#FFFFFF',
+  '#000000',
+  TRUE,
+  3,
+  TRUE,
+  '2024-05-08T12:40:11.583Z',
+  '2024-05-08T12:40:11.583Z',
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  'center',
+  'center'
+),
+(
+  'e5f28d7c-6a23-5f0d-87bc-6e9d2bda7d20',
+  'Modern Facility',
+  'Train in our spacious, clean academy with state-of-the-art equipment and amenities.',
+  'MdOutlineSecurity',
+  '#1A1A1A',
+  '#FFFFFF',
+  '#000000',
+  TRUE,
+  4,
+  TRUE,
+  '2024-05-08T12:40:11.583Z',
+  '2024-05-08T12:40:11.583Z',
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  'center',
+  'center'
+); 
