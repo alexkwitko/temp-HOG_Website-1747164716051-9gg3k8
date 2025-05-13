@@ -1,0 +1,174 @@
+-- Create dedicated shop schema for e-commerce tables
+CREATE SCHEMA IF NOT EXISTS shop;
+
+-- Products - Main product data
+CREATE TABLE IF NOT EXISTS shop.products (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  description TEXT,
+  vendor TEXT,
+  product_type TEXT,
+  handle TEXT UNIQUE,
+  status TEXT DEFAULT 'active',
+  tags TEXT[],
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Product Variants - Different versions of a product
+CREATE TABLE IF NOT EXISTS shop.product_variants (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID NOT NULL REFERENCES shop.products(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  compare_at_price DECIMAL(10, 2),
+  sku TEXT UNIQUE,
+  barcode TEXT,
+  size TEXT,
+  color TEXT,
+  material TEXT,
+  weight DECIMAL(10, 2),
+  weight_unit TEXT,
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Product Images - Images associated with products
+CREATE TABLE IF NOT EXISTS shop.product_images (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID NOT NULL REFERENCES shop.products(id) ON DELETE CASCADE,
+  variant_id UUID REFERENCES shop.product_variants(id) ON DELETE SET NULL,
+  src TEXT NOT NULL,
+  alt TEXT,
+  position INTEGER DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Collections - Groups of products
+CREATE TABLE IF NOT EXISTS shop.collections (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  description TEXT,
+  handle TEXT UNIQUE,
+  image_src TEXT,
+  published BOOLEAN DEFAULT TRUE, 
+  sort_order TEXT DEFAULT 'alpha-asc',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Collection Products - Products in a collection
+CREATE TABLE IF NOT EXISTS shop.collection_products (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  collection_id UUID NOT NULL REFERENCES shop.collections(id) ON DELETE CASCADE,
+  product_id UUID NOT NULL REFERENCES shop.products(id) ON DELETE CASCADE,
+  position INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(collection_id, product_id)
+);
+
+-- Inventory Items
+CREATE TABLE IF NOT EXISTS shop.inventory_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  variant_id UUID NOT NULL REFERENCES shop.product_variants(id) ON DELETE CASCADE,
+  sku TEXT,
+  cost DECIMAL(10, 2),
+  quantity INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(variant_id)
+);
+
+-- Orders
+CREATE TABLE IF NOT EXISTS shop.orders (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_number TEXT UNIQUE,
+  email TEXT,
+  phone TEXT,
+  first_name TEXT,
+  last_name TEXT,
+  status TEXT DEFAULT 'pending',
+  total_price DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  subtotal_price DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  total_tax DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  shipping_address JSONB,
+  billing_address JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Order Line Items
+CREATE TABLE IF NOT EXISTS shop.order_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id UUID NOT NULL REFERENCES shop.orders(id) ON DELETE CASCADE,
+  product_id UUID NOT NULL REFERENCES shop.products(id) ON DELETE CASCADE,
+  variant_id UUID REFERENCES shop.product_variants(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  variant_title TEXT,
+  quantity INTEGER NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  total_price DECIMAL(10, 2) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE shop.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shop.product_variants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shop.product_images ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shop.collections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shop.collection_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shop.inventory_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shop.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE shop.order_items ENABLE ROW LEVEL SECURITY;
+
+-- Basic read access
+CREATE POLICY "Products are viewable by everyone" 
+ON shop.products FOR SELECT 
+TO PUBLIC
+USING (true);
+
+-- Admin CRUD policies
+CREATE POLICY "Admins can do all operations on shop products" 
+ON shop.products
+USING (auth.jwt() ->> 'role' = 'admin')
+WITH CHECK (auth.jwt() ->> 'role' = 'admin');
+
+CREATE POLICY "Admins can do all operations on product variants" 
+ON shop.product_variants
+USING (auth.jwt() ->> 'role' = 'admin')
+WITH CHECK (auth.jwt() ->> 'role' = 'admin');
+
+-- Add read policies for all tables
+CREATE POLICY "Product variants are viewable by everyone" 
+ON shop.product_variants FOR SELECT 
+TO PUBLIC
+USING (true);
+
+CREATE POLICY "Product images are viewable by everyone" 
+ON shop.product_images FOR SELECT 
+TO PUBLIC
+USING (true);
+
+CREATE POLICY "Collections are viewable by everyone" 
+ON shop.collections FOR SELECT 
+TO PUBLIC
+USING (true);
+
+CREATE POLICY "Collection products are viewable by everyone" 
+ON shop.collection_products FOR SELECT 
+TO PUBLIC
+USING (true);
+
+-- Create indexes for performance
+CREATE INDEX IF NOT EXISTS idx_shop_products_handle ON shop.products(handle);
+CREATE INDEX IF NOT EXISTS idx_shop_products_vendor ON shop.products(vendor);
+CREATE INDEX IF NOT EXISTS idx_shop_products_product_type ON shop.products(product_type);
+CREATE INDEX IF NOT EXISTS idx_shop_product_variants_product_id ON shop.product_variants(product_id);
+CREATE INDEX IF NOT EXISTS idx_shop_product_images_product_id ON shop.product_images(product_id);
+CREATE INDEX IF NOT EXISTS idx_shop_collection_products_collection_id ON shop.collection_products(collection_id);
+CREATE INDEX IF NOT EXISTS idx_shop_collection_products_product_id ON shop.collection_products(product_id);
+CREATE INDEX IF NOT EXISTS idx_shop_order_items_order_id ON shop.order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_shop_order_items_product_id ON shop.order_items(product_id); 
